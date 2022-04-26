@@ -1,0 +1,21 @@
+pedestrians:
+  - pedestrian1:
+      position:
+          x: 3696.330322265625
+          y: 73735.3046875
+          z: 1.0
+  - pedestrian2:
+      position:
+          x: 3758.16455078125
+          y: 73756.140625
+          z: 1.0
+  - pedestrian3:
+      position:
+          x: 3726.31591796875
+          y: 73775.4921875
+          z: 1.0
+  - pedestrian4:
+      position:
+          x: 3726.31591796875
+          y: 73775.4921875
+          z: 1.0

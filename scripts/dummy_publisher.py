@@ -35,7 +35,7 @@ class DummyPublisher(rclpy.node.Node):
 
         self.msgs = []
         for (k, v) in self.pedestrians.items():
-            msgs.append(self.gen_dummy_msg(v[0], v[1], v[2]))
+            self.msgs.append(self.gen_dummy_msg(v[0], v[1], v[2]))
 
         # create pub
         self.pub = self.create_publisher(Object, '/simulation/dummy_perception_publisher/object_info', 1)
@@ -72,6 +72,8 @@ class DummyPublisher(rclpy.node.Node):
 def main(args=None):
     rclpy.init(args=args)
     p = DummyPublisher()
+    rclpy.spin(p)
+    p.destroy_node()
     rclpy.shutdown()
 
 if __name__ == '__main__':

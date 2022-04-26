@@ -7,8 +7,8 @@
   <maintainer email="mamorusobue@todo.todo">mamorusobue</maintainer>
   <license>TODO: License declaration</license>
 
-  <buildtool_depend>ament_cmake_auto</buildtool_depend>
-
+  <buildtool_depend>ament_auto_cmake</buildtool_depend>
+  <depend>dummy_perception_publisher</depend>
   <export>
     <build_type>ament_cmake</build_type>
   </export>

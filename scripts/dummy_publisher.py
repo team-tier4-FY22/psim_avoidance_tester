@@ -30,12 +30,26 @@ class DummyPublisher(rclpy.node.Node):
                 self.pedestrians[pedestrian_name].append(position['x'])
                 self.pedestrians[pedestrian_name].append(position['y'])
                 self.pedestrians[pedestrian_name].append(position['z'])
+            cars = yaml_info["cars"]
+            self.cars = dict() # map ["name"] => [[x, y, z], [x, y, z, w]]
+            for i in range(len(cars)):
+                car_name = list(cars[i].keys())[0]
+                position = cars[i][car_name]["position"]
+                orientation = cars[i][car_name]["orientation"]
+                self.cars[car_name] = [[], []]
+                self.cars[car_name][0].append(position['x'])
+                self.cars[car_name][0].append(position['y'])
+                self.cars[car_name][0].append(position['z'])
+                self.cars[car_name][1].append(orientation['x'])
+                self.cars[car_name][1].append(orientation['y'])
+                self.cars[car_name][1].append(orientation['z'])
+                self.cars[car_name][1].append(orientation['w'])
 
         self.get_logger().info(f"Loaded {yaml_path}")
 
-        self.msgs = []
+        self.pedestrian_msgs = []
         for (k, v) in self.pedestrians.items():
-            self.msgs.append(self.gen_dummy_msg(v[0], v[1], v[2]))
+            self.pedestrian_msgs.append(self.gen_dummy_msg(v[0], v[1], v[2]))
 
         # create pub
         self.pub = self.create_publisher(Object, '/simulation/dummy_perception_publisher/object_info', 1)
@@ -43,7 +57,7 @@ class DummyPublisher(rclpy.node.Node):
         self.timer = self.create_timer(10, self.timer_cb)
 
     def timer_cb(self):
-        for msg in self.msgs:
+        for msg in self.pedestrian_msgs:
             self.pub.publish(msg)
         self.get_logger().info("Published dummy msg")
 

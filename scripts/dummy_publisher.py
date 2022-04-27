@@ -21,6 +21,7 @@ class DummyPublisher(rclpy.node.Node):
         yaml_path = os.path.join(pkg_share_path, "param/dummy_objects.yaml")
         with open(yaml_path) as yaml_path_fp:
             yaml_info = yaml.safe_load(yaml_path_fp)
+            """
             pedestrians = yaml_info["pedestrians"]
             self.pedestrians = dict() # map ["name"] => [x, y, z]
             for i in range(len(pedestrians)):
@@ -30,6 +31,7 @@ class DummyPublisher(rclpy.node.Node):
                 self.pedestrians[pedestrian_name].append(position['x'])
                 self.pedestrians[pedestrian_name].append(position['y'])
                 self.pedestrians[pedestrian_name].append(position['z'])
+            """
             cars = yaml_info["cars"]
             self.cars = dict() # map ["name"] => [[x, y, z], [x, y, z, w]]
             for i in range(len(cars)):
@@ -47,9 +49,13 @@ class DummyPublisher(rclpy.node.Node):
 
         self.get_logger().info(f"Loaded {yaml_path}")
 
-        self.pedestrian_msgs = []
+        self.object_msgs = []
+        """
         for (k, v) in self.pedestrians.items():
-            self.pedestrian_msgs.append(self.gen_dummy_msg(v[0], v[1], v[2]))
+            self.object_msgs.append(self.gen_dummy_msg(v[0], v[1], v[2], 7, 1, [0.6, 0.6, 2.0]))
+        """
+        for (k, v) in self.cars.items():
+            self.object_msgs.append(self.gen_dummy_msg(v[0], v[1], 1, 0, [4.0, 1.8, 2.0]))
 
         # create pub
         self.pub = self.create_publisher(Object, '/simulation/dummy_perception_publisher/object_info', 1)
@@ -57,29 +63,32 @@ class DummyPublisher(rclpy.node.Node):
         self.timer = self.create_timer(10, self.timer_cb)
 
     def timer_cb(self):
-        for msg in self.pedestrian_msgs:
+        for msg in self.object_msgs:
             self.pub.publish(msg)
         self.get_logger().info("Published dummy msg")
 
-    def gen_dummy_msg(self, x, y, z):
+    def gen_dummy_msg(self, position, orientation, label, box_type, shape):
         msg = Object()
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = "map"
         # pose
         pose = msg.initial_state.pose_covariance.pose
-        pose.position.x = x
-        pose.position.y = y
-        pose.position.z = z
-        pose.orientation.w = 1.0
+        pose.position.x = position[0]
+        pose.position.y = position[1]
+        pose.position.z = position[2]
+        pose.orientation.x = orientation[0]
+        pose.orientation.y = orientation[1]
+        pose.orientation.z = orientation[2]
+        pose.orientation.w = orientation[3]
         # classification
-        msg.classification.label = 7
+        msg.classification.label = label
         msg.classification.probability = 1.0
         # shape
-        msg.shape.type = 1
+        msg.shape.type = box_type
         msg.shape.footprint.points = []
-        msg.shape.dimensions.x = 0.6
-        msg.shape.dimensions.y = 0.6
-        msg.shape.dimensions.z = 2.0
+        msg.shape.dimensions.x = shape[0]
+        msg.shape.dimensions.y = shape[1]
+        msg.shape.dimensions.z = shape[2]
 
         return msg
 

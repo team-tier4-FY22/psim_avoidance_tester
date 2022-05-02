@@ -2,6 +2,7 @@
 
 import os
 import yaml
+import argparse
 import launch
 import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
@@ -17,8 +18,12 @@ class DummyPublisher(rclpy.node.Node):
         super().__init__("DummyPublisher")
 
         # load yaml
-        pkg_share_path = get_package_share_directory('psim_avoidance_tester')
-        yaml_path = os.path.join(pkg_share_path, "param/dummy_objects.yaml")
+        parser = argparse.ArgumentParser()
+        parser.add_argument('path')
+        args = parser.parse_args()
+
+        # pkg_share_path = get_package_share_directory('psim_avoidance_tester')
+        yaml_path = args.path
         with open(yaml_path) as yaml_path_fp:
             yaml_info = yaml.safe_load(yaml_path_fp)
             """
